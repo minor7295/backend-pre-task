@@ -1,0 +1,31 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:5.7
+    hostname: mysql
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: kidsnote_contact
+      MYSQL_USER: kidsnote
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+      - ./my.cnf:/etc/mysql/my.cnf:ro
+    ports:
+      - "3306:3306"
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      HOST: mysql
+      DATABASE: kidsnote_contact
+      USER: kidsnote
+      PASSWORD: ${MYSQL_PASSWORD}
+    volumes: 
+      - ./backend:/code
+    ports:
+      - "80:8000"
+    depends_on:
+        - mysql

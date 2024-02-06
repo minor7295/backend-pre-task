@@ -1,5 +1,9 @@
 Django==3.2.20
 django-mysql==4.11.0
-mysqlclient==2.2.0
 djangorestframework==3.14.0
+django-filter
+drf-spectacular
+gunicorn
+mysqlclient==2.2.0
+pre-commit
 
