@@ -45,6 +45,7 @@ http://localhost/
 ```
 http://localhost/api/schema/swagger-ui/
 ```
+![swagger이미지](https://github.com/minor7295/backend-pre-task/blob/master/img/swagger%20%EC%9D%B4%EB%AF%B8%EC%A7%80.png?raw=true)
 
 ## 디렉토리 구조
 ```
@@ -74,7 +75,7 @@ http://localhost/api/schema/swagger-ui/
 ```
 ## DB / Model 설계
 [ERD](https://drive.google.com/file/d/1o18rH3gINEhkL-HfPFFoYVyzAuwC8Qwe/view?usp=sharing)
-
+![ERD이미지](https://github.com/minor7295/backend-pre-task/blob/master/img/erd%20%EC%9D%B4%EB%AF%B8%EC%A7%80.png?raw=true)
 
 1) 테이블 구성: `tb_contact`(연락처), `tb_label`(라벨), `tb_contact_label`(연락처, 라벨 매개) 등 총 3개의 테이블로 구성되어있습니다. Django ORM Model에서 위의 테이블은 각각 `Contact`, `Label`, `ContactLabel` 모델로 매핑됩니다.
 3) 인덱스 처리: `name`(이름),`email`(이메일), `phone`(전화번호) 필드 기준 정렬 속도를 높이기 위해 `tb_contact` 테이블에 인덱스를 설정하였으며, 중복된 전화번호가 등록되지 않도록 `phone` 필드 기준으로 유니크 인덱스를 설정하였습니다. Django ORM model에서 모델 내부 `Meta` class에서 `indexes`, `constraints`로 표현됩니다.
@@ -82,7 +83,7 @@ http://localhost/api/schema/swagger-ui/
 4) url : `tb_contact`테이블의 `profile`(프로필이미지 url), `website`(웹사이트) 필드는 Django ORM model의 URLField를 사용하여 표현합니다. MySQL DB에서는 varchar 필드로 표현되며, 크롬 기준 최대 url길이인 2083자로 설정하였습니다.
 5) email : `tb_contact`테이블의 `email`필드는 Django ORM model의 EmailField를 사용하여 표현합니다. MySQL DB에서는 varchar(254) 필드로 표현됩니다.
 
-## serizlizer 구성
+## serializer 구성
 1) ModelSerializer: Django ORM모델을 통해 DB record와 json 데이터를 상호변환하기 위해 Django Rest Framework의 ModelSerializer를 사용했습니다.
 2) Nested Serializer: 연락처별로 적용된 라벨들을 표현하기 위해 연락처 목록, 연락처 상세정보를 담당하는 `ContactListSerializer`와 `ContactDetailSerializer`에 라벨을 담당하는 `LabelSerializer`를 필드로 추가하였습니다.
 2) 필드 추가 정의: 연락처 목록에서는 `company`(회사)와 `position`(직책)을 하나의 필드로 합쳐서 표현하기 위해 `company_position`이라는 필드를 추가하였습니다. list view에서 queryset을 재정의하며 추가된 `company_position`필드를 json으로 변환하게 됩니다.
