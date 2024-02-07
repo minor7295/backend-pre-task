@@ -84,7 +84,7 @@ http://localhost/api/schema/swagger-ui/
 
 ## serializer 구성
 1) ModelSerializer: Django ORM모델을 통해 DB row와 json 데이터를 상호변환하기 위해 Django Rest Framework의 ModelSerializer를 사용했습니다.
-2) Nested Serializer: 연락처별로 적용된 라벨들을 표현하기 위해 연락처 목록, 연락처 상세정보를 담당하는 `ContactListSerializer`와 `ContactDetailSerializer`에 라벨을 담당하는 `LabelSerializer`를 필드로 추가하였습니다.
+2) Nested Serializer: 연락처별로 적용된 라벨들을 표현하기 위해 연락처 목록, 연락처 상세정보를 담당하는 `ContactListSerializer`와 `ContactDetailSerializer`에 라벨을 담당하는 `LabelListSerializer`를 필드로 추가하였습니다.
 3) 필드 추가 정의: 연락처 목록에서는 `company`(회사)와 `position`(직책)을 하나의 필드로 합쳐서 표현하기 위해 `company_position`이라는 필드를 추가하였습니다. list view에서 filter_queryset 메소드를 재정의하며 추가된 `company_position`필드를 json으로 변환하게 됩니다.
 4) 필드 제한: 연락처 목록에서는 `Meta` 클래스의 `fields` 프로퍼티에 json으로 변환할 필드목록을 명시하여 상세정보를 생략합니다.
 

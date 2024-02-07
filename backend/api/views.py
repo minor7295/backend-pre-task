@@ -28,7 +28,9 @@ from api.models import (
 from api.serializers import (
     ContactDetailSerializer,
     ContactListSerializer,
-    LabelSerializer,
+    LabelCreateSerializer,
+    LabelUpdateSerializer,
+    LabelListSerializer,
     )
 
 @extend_schema_view(
@@ -73,7 +75,7 @@ from api.serializers import (
             "### 라벨 적용 \n\n" \
             "contact_id로 특정한 연락처에 라벨을 적용합니다.\n\n" \
             "기존에 등록되었던 라벨은 모두 삭제되고, " \
-            "요청으로 명시한 라벨의 정보만 마게 됩니다. \n\n" \
+            "요청으로 명시한 라벨의 정보만 남게 됩니다. \n\n" \
     ),
 )
 class ContactViewSet(viewsets.ModelViewSet):
@@ -94,7 +96,7 @@ class ContactViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action == "label":
-            return LabelSerializer
+            return LabelListSerializer
         elif self.action == "list":
             return ContactListSerializer
         else:
@@ -130,7 +132,7 @@ class ContactViewSet(viewsets.ModelViewSet):
                     contact_id=contact.contact_id,
                     label_id = d["label_id"],
                     ).save()
-        serializer = LabelSerializer(
+        serializer = LabelListSerializer(
             data = data,
             many = True,
         )
@@ -152,8 +154,16 @@ class LabelViewSet(
 ):
     queryset = Label.objects.all()
 
-    serializer_class = LabelSerializer
+    serializer_class = LabelListSerializer
 
     pagination_class = None
 
     filter_backends = [DjangoFilterBackend]
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return LabelCreateSerializer
+        elif self.action == "update":
+            return LabelUpdateSerializer
+        else:
+            return super().get_serializer_class()
