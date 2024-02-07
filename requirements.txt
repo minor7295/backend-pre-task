@@ -5,5 +5,4 @@ django-filter
 drf-spectacular
 gunicorn
 mysqlclient==2.2.0
-pre-commit
 
