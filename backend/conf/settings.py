@@ -94,6 +94,30 @@ DATABASES = {
 }
 
 
+LOGGING = {
+    "version" : 1,
+    "disable_existing_loggers" : False,
+    "formatters" : {
+        "default_format" : {
+            "format" : \
+                "%(asctime)s %(levelname)s " \
+                "[%(name)s] [%(filename)s:%(lineno)d] " \
+                "- %(message)s",
+        },
+    },
+    "handlers" : {
+        "console" : {
+            "level" : "INFO",
+            "class" : "logging.StreamHandler",
+            "formatter" : "default_format",
+        },
+    },
+    "root" : {
+        "handlers" : ["console"],
+        "level" : "INFO",
+    },
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
