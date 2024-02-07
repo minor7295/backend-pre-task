@@ -121,10 +121,10 @@ class ContactViewSet(viewsets.ModelViewSet):
         *args,
         **kwargs,
     ):
-        contact = self.get_object()
-        ContactLabel.objects.filter(contact_id=contact).delete()
         data = request.data
         with transaction.atomic():
+            contact = self.get_object()
+            ContactLabel.objects.filter(contact_id=contact).delete()
             for d in data:
                 ContactLabel(
                     contact_id=contact.contact_id,
