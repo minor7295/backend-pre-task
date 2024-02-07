@@ -38,3 +38,6 @@ INSERT INTO `kidsnote_contact`.`tb_label` (`label_id`, `label_name`) VALUES ('4'
 INSERT INTO `kidsnote_contact`.`tb_label` (`label_id`, `label_name`) VALUES ('5', 'Lavender');
 
 -- 연락처 라벨 매개 데이터
+INSERT INTO `kidsnote_contact`.`tb_contact_label` (`contact_id`, `label_id`) VALUES ('1', '1');
+INSERT INTO `kidsnote_contact`.`tb_contact_label` (`contact_id`, `label_id`) VALUES ('1', '2');
+INSERT INTO `kidsnote_contact`.`tb_contact_label` (`contact_id`, `label_id`) VALUES ('3', '1');
