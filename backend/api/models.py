@@ -1,8 +1,11 @@
 import logging
 
+from django.core.validators import RegexValidator
 from django.db import models
 
-logger = logging.getLogger(__name__)
+phone_number_regex = RegexValidator(
+    regex = r"^(0[1-9]{1}[0-9]{0,1})-(\d{3,4})-(\d{4})$",
+)
 
 class Contact(models.Model):
 
@@ -29,6 +32,7 @@ class Contact(models.Model):
 
     phone = models.CharField(
         max_length = 100,
+        validators = [ phone_number_regex ],
         help_text = "전화번호",
     )
 
