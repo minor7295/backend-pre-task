@@ -31,10 +31,87 @@ from api.serializers import (
     LabelCreateSerializer,
     LabelUpdateSerializer,
     LabelListSerializer,
-    )
+)
+
+
+CONTACT_REQUEST_EXAMPLE = {
+    "profile" : "https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png",
+    "name" : "강건우",
+    "email" : "yunseo28@example.com",
+    "phone" : "055-386-9875",
+    "company" : "(주) 장이윤",
+    "position" : "도장공",
+    "memo" : "Voluptatem eveniet",
+    "address" : "경기도 증평군 봉은사536가",
+    "birthday" : "2001-10-03",
+    "website" : "https://www.imgim.net/",
+}
+
+CONTACT_DETAIL_RESPONSE_EXAMPLE = {
+    "contact_id" : 1,
+    "profile" : "https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png",
+    "name" : "강건우",
+    "email" : "yunseo28@example.com",
+    "phone" : "055-386-9875",
+    "company" : "(주) 장이윤",
+    "position" : "도장공",
+    "memo" : "Voluptatem eveniet",
+    "address" : "경기도 증평군 봉은사536가",
+    "birthday" : "2001-10-03",
+    "website" : "https://www.imgim.net/",
+    "labels" : [{"label_id": 1, "label_name": "Lime"}],
+}
+
+CONTACT_LIST_RESPONSE_EXAMPLE = {
+    "next": "http://localhost/contact/?cursor=cD01",
+    "previous": None,
+    "results": [
+        {
+            "contact_id": 1,
+            "profile": "https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png",
+            "name": "강건우",
+            "email": "yunseo28@example.com",
+            "phone": "055-386-9875",
+            "company_position": "(주) 장이윤 (도장공)",
+            "labels": [{"label_id": 1, "label_name": "Lime"}],
+        },
+    ],
+}
+
+LABEL_REQUEST_EXAMPLE = {"label_name": "Lime"}
+
+LABEL_RESPONSE_EXAMPLE = {"label_id": 1, "label_name": "Lime"}
+
 
 @extend_schema_view(
-    create = extend_schema(description = "### 주소록 등록 \n\n"),
+    create = extend_schema(
+        description = "### 주소록 등록 \n\n",
+        examples = [
+            OpenApiExample(
+                "연락처 등록 요청",
+                value = CONTACT_REQUEST_EXAMPLE,
+                request_only = True,
+            ),
+            OpenApiExample(
+                "연락처 상세 정보",
+                value = CONTACT_DETAIL_RESPONSE_EXAMPLE,
+                response_only = True,
+            ),
+            OpenApiExample(
+                "중복 전화번호 등록 오류",
+                value = {
+                    "type" : "validation_error",
+                    "errors" : [{
+                        "code": "invalid",
+                        "detail": "'055-386-9875'는 이미 등록된 전화번호입니다.",
+                        "attr": None,
+                    }],
+                },
+                response_only = True,
+                status_codes = [400],
+            ),
+        ],
+    ),
     destroy = extend_schema(description = "### 주소록 삭제 \n\n"),
     list = extend_schema(
         description = \
@@ -50,32 +127,53 @@ from api.serializers import (
         examples = [
             OpenApiExample(
                 "연락처 정보",
-                value = {
-                    "next": "http://localhost/contact/?cursor=cD01",
-                    "previous": None,
-                    "results": [
-                        {
-                            "contact_id": 1,
-                            "profile": "https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png",
-                            "name": "강건우",
-                            "email": "yunseo28@example.com",
-                            "phone": "055-386-9875",
-                            "company_position": "(주) 장이윤 (도장공)",
-                            "labels": [{"label_id": 1, "label_name": "Lime"}],
-                        },
-                    ],
-                },
+                value = CONTACT_LIST_RESPONSE_EXAMPLE,
             ),
         ],
     ),
-    retrieve = extend_schema(description = "### 주소록 조회 \n\n"),
-    update = extend_schema(description = "### 주소록 수정 \n\n"),
+    retrieve = extend_schema(
+        description = "### 주소록 조회 \n\n",
+        examples = [
+            OpenApiExample(
+                "연락처 상세 정보",
+                value = CONTACT_DETAIL_RESPONSE_EXAMPLE,
+                response_only = True,
+            ),
+        ],    
+    ),
+    update = extend_schema(
+        description = "### 주소록 수정 \n\n",
+        examples = [
+            OpenApiExample(
+                "연락처 수정 요청",
+                value = CONTACT_REQUEST_EXAMPLE,
+                request_only = True,
+            ),
+            OpenApiExample(
+                "연락처 상세 정보",
+                value = CONTACT_DETAIL_RESPONSE_EXAMPLE,
+                response_only = True,
+            ),
+        ],
+    ),
     label = extend_schema(
         description = \
             "### 라벨 적용 \n\n" \
             "contact_id로 특정한 연락처에 라벨을 적용합니다.\n\n" \
             "기존에 등록되었던 라벨은 모두 삭제되고, " \
-            "요청으로 명시한 라벨의 정보만 남게 됩니다. \n\n" \
+            "요청으로 명시한 라벨의 정보만 남게 됩니다. \n\n",
+        examples = [
+            OpenApiExample(
+                "라벨 등록 요청",
+                value = [LABEL_RESPONSE_EXAMPLE],
+                request_only = True,
+            ),
+            OpenApiExample(
+                "라벨 등록 응답",
+                value = [LABEL_RESPONSE_EXAMPLE],
+                response_only = True,
+            ),
+        ],
     ),
 )
 class ContactViewSet(viewsets.ModelViewSet):
@@ -139,11 +237,48 @@ class ContactViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
+
 @extend_schema_view(
-    create = extend_schema(description = "### 라벨 등록 \n\n"),
+    create = extend_schema(
+        description = "### 라벨 등록 \n\n",
+        examples = [
+            OpenApiExample(
+                "라벨 등록 요청",
+                value = LABEL_REQUEST_EXAMPLE,
+                request_only = True,
+            ),
+            OpenApiExample(
+                "라벨 등록 응답",
+                value = [LABEL_RESPONSE_EXAMPLE],
+                response_only = True,
+            ),
+        ],
+    ),
     destroy = extend_schema(description = "### 라벨 삭제 \n\n"),
-    list = extend_schema(description = "### 라벨 목록 조회 \n\n"),
-    update = extend_schema(description = "### 라벨 이름 수정 \n\n"),
+    list = extend_schema(
+        description = "### 라벨 목록 조회 \n\n",
+        examples = [
+            OpenApiExample(
+                "라벨 목록",
+                value = [LABEL_RESPONSE_EXAMPLE],
+            ),
+        ],
+    ),
+    update = extend_schema(
+        description = "### 라벨 이름 수정 \n\n",
+        examples = [
+            OpenApiExample(
+                "라벨 수정 요청",
+                value = LABEL_REQUEST_EXAMPLE,
+                request_only = True,
+            ),
+            OpenApiExample(
+                "라벨 수정 응답",
+                value = LABEL_RESPONSE_EXAMPLE,
+                response_only = True,
+            ),
+        ],
+    ),
 )
 class LabelViewSet(
     mixins.CreateModelMixin,
