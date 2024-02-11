@@ -1,3 +1,6 @@
+"""
+django orm과 json의 상호변환을 담당합니다.
+"""
 from django.db import IntegrityError
 
 from rest_framework import serializers
@@ -9,24 +12,36 @@ from api.models import (
 )
 
 class LabelCreateSerializer(serializers.ModelSerializer):
+    """
+    라벨 생성시 사용하는 serializer입니다.
+    """
     class Meta:
         model = Label
         fields = ["label_name"]
 
 
 class LabelListSerializer(serializers.ModelSerializer):
+    """
+    라벨 목록 조회시 사용하는 serializer입니다.
+    """
     class Meta:
         model = Label
         fields = "__all__"
 
 
 class LabelUpdateSerializer(serializers.ModelSerializer):
+    """
+    라벨 수정시 사용하는 serializer입니다.
+    """
     class Meta:
         model = Label
         fields = "__all__"
 
 
 class ContactListSerializer(serializers.ModelSerializer):
+    """
+    연락처 목록 조회시 사용하는 serializer입니다.
+    """
     company_position = serializers.CharField(
         read_only = True,
         help_text = "회사 (직책)",
@@ -50,6 +65,9 @@ class ContactListSerializer(serializers.ModelSerializer):
         ]
 
 class ContactDetailSerializer(serializers.ModelSerializer):
+    """
+    연락처 상세 정보 조회시 사용하는 serializer입니다.
+    """
     labels = LabelListSerializer(
         many=True,
         read_only=True,
@@ -61,7 +79,7 @@ class ContactDetailSerializer(serializers.ModelSerializer):
         except IntegrityError as e:
             raise ValidationError(
                 f"'{validated_data['phone']}'는 이미 등록된 전화번호입니다.",
-            )
+            ) from e
 
     class Meta:
         model = Contact

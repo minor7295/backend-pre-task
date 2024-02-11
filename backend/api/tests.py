@@ -1,1 +1,3 @@
-from django.test import TestCase
+"""
+view의 동작을 검증합니다.
+"""

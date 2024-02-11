@@ -1,0 +1,10 @@
+repos:
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        description: commit fails if pylint score is not 10
+        entry: pylint
+        args: ["--rcfile=pylintrc", "--fail-under=10"]
+        language: python
+        types: [python]

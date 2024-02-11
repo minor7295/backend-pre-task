@@ -92,7 +92,9 @@ http://localhost/api/schema/swagger-ui/
 │  └─2_data.sql: MySQL DB에 목데이터를 삽입할 때 사용되는 파일입니다. (DB 초기화시 실행되는 순서를 설정하기 위해 파일명을 수정했습니다.)
 │─Dockerfile : backend폴더의 소스코드를 docker image로 빌드합니다.
 │─docker-compose.yml : MySQL과 DRF앱을 실행합니다.
-└─my.cnf : MySQL 컨테이너 생성 후 db폴더의 스크립트가 실행될 때 한글 인코딩이 깨지지 않도록 설정합니다.
+│─my.cnf : MySQL 컨테이너 생성 후 db폴더의 스크립트가 실행될 때 한글 인코딩이 깨지지 않도록 설정합니다.
+│─pylintrc : pylint로 코드 평가시 적용할 규칙이 담긴 파일입니다.
+└─.pre-commit-config.yaml : commit 전에 pylint 기반 코드 평가, test 코드 실행이 이뤄지도록 설정합니다.
 ```
 
 ## serializer 구성

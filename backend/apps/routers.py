@@ -1,3 +1,6 @@
+"""
+viewset의 view와 http메소드를 연결합니다. 수정작업을 put메소드로 통일합니다.
+"""
 from rest_framework.routers import (
     DefaultRouter,
     Route,

@@ -1,5 +1,6 @@
-import logging
-
+"""
+django orm 모델을 정의합니다.
+"""
 from django.core.validators import RegexValidator
 from django.db import models
 
@@ -8,7 +9,9 @@ phone_number_regex = RegexValidator(
 )
 
 class Contact(models.Model):
-
+    """
+    연락처 정보를 담는 ORM 모델입니다.
+    """
     contact_id = models.AutoField(
         primary_key = True,
         help_text = "연락처 id",
@@ -104,6 +107,9 @@ class Contact(models.Model):
 
 
 class Label(models.Model):
+    """
+    라벨 정보를 담는 ORM 모델입니다.
+    """
     label_id = models.AutoField(
         primary_key = True,
         help_text = "라벨 id",
@@ -119,6 +125,9 @@ class Label(models.Model):
 
 
 class ContactLabel(models.Model):
+    """
+    연락처와 라벨 정보를 매개하는 ORM 모델입니다.
+    """
     contact = models.ForeignKey(
         Contact,
         on_delete = models.CASCADE,

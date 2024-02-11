@@ -1,3 +1,6 @@
+"""
+model을 기반으로 CRUD를 처리합니다.
+"""
 from django.db import transaction
 from django.db.models import (
     F,
@@ -35,7 +38,7 @@ from api.serializers import (
 
 
 CONTACT_REQUEST_EXAMPLE = {
-    "profile" : "https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png",
+    "profile" : "https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png", # pylint: disable = line-too-long
     "name" : "강건우",
     "email" : "yunseo28@example.com",
     "phone" : "055-386-9875",
@@ -49,7 +52,7 @@ CONTACT_REQUEST_EXAMPLE = {
 
 CONTACT_DETAIL_RESPONSE_EXAMPLE = {
     "contact_id" : 1,
-    "profile" : "https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png",
+    "profile" : "https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png", # pylint: disable = line-too-long
     "name" : "강건우",
     "email" : "yunseo28@example.com",
     "phone" : "055-386-9875",
@@ -68,7 +71,7 @@ CONTACT_LIST_RESPONSE_EXAMPLE = {
     "results": [
         {
             "contact_id": 1,
-            "profile": "https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png",
+            "profile": "https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png", # pylint: disable = line-too-long
             "name": "강건우",
             "email": "yunseo28@example.com",
             "phone": "055-386-9875",
@@ -165,7 +168,7 @@ LABEL_RESPONSE_EXAMPLE = {"label_id": 1, "label_name": "Lime"}
                 value = CONTACT_DETAIL_RESPONSE_EXAMPLE,
                 response_only = True,
             ),
-        ],    
+        ],
     ),
     update = extend_schema(
         description = "### 주소록 수정 \n\n",
@@ -203,6 +206,9 @@ LABEL_RESPONSE_EXAMPLE = {"label_id": 1, "label_name": "Lime"}
     ),
 )
 class ContactViewSet(viewsets.ModelViewSet):
+    """
+    연락처의 crud, 연락처와 라벨의 매핑을 처리하는 ViewSet입니다.
+    """
     queryset = Contact \
         .objects \
         .all() \
@@ -244,8 +250,8 @@ class ContactViewSet(viewsets.ModelViewSet):
     def label(
         self,
         request,
-        *args,
-        **kwargs,
+        *args, # pylint: disable = unused-argument
+        **kwargs, # pylint: disable = unused-argument
     ):
         data = request.data
         with transaction.atomic():
@@ -313,6 +319,9 @@ class LabelViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
+    """
+    라벨의 crud를 처리하는 ViewSet입니다.
+    """
     queryset = Label.objects.all()
 
     serializer_class = LabelListSerializer

@@ -6,4 +6,5 @@ drf-spectacular
 drf-standardized-errors[openapi]
 gunicorn
 mysqlclient==2.2.0
-
+pre-commit
+pylint
