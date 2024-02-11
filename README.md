@@ -56,7 +56,7 @@ http://localhost/
 http://localhost/api/schema/swagger-ui/
 ```
 ![swagger이미지](https://github.com/minor7295/backend-pre-task/blob/master/img/swagger%20%EC%9D%B4%EB%AF%B8%EC%A7%80.png?raw=true)
-![swagger오류이미지](https%3A%2F%2Fgithub.com%2Fminor7295%2Fbackend-pre-task%2Fblob%2Fmaster%2Fimg%2Fswagger%20%EC%98%A4%EB%A5%98%20%EC%9D%B4%EB%AF%B8%EC%A7%80.png?raw=true)
+![swagger오류이미지](https://github.com/minor7295/backend-pre-task/blob/master/img/swagger%20%EC%98%A4%EB%A5%98%20%EC%9D%B4%EB%AF%B8%EC%A7%80.png?raw=true)
 
 ## DB / Model 설계
 ![ERD이미지](https://github.com/minor7295/backend-pre-task/blob/master/img/erd%20%EC%9D%B4%EB%AF%B8%EC%A7%80.png?raw=true)
