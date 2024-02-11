@@ -23,9 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-4h(4(tkle+h!x*81b(r9!!z4jous7ld3!nwfx7ra^w39!z2vls"
 
 # SECURITY WARNING: don"t run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+]
 
 
 # Application definition
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_filters",
     "drf_spectacular",
+    "drf_standardized_errors",
     "rest_framework",
     "api.apps.ApiConfig",
     "apps.apps.AppsConfig",
@@ -136,20 +139,24 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 REST_FRAMEWORK = {
-    "DEFAULT_RENDERER_CLASSES" : [
-        "rest_framework.renderers.JSONRenderer",
+    "DEFAULT_FILTER_BACKENDS" : [
+        "rest_framework.filters.OrderingFilter",
     ],
     "DEFAULT_PARSER_CLASSES" : [
         "rest_framework.parsers.JSONParser",
     ],
-    "DEFAULT_FILTER_BACKENDS" : [
-        "rest_framework.filters.OrderingFilter",
+    "DEFAULT_RENDERER_CLASSES" : [
+        "rest_framework.renderers.JSONRenderer",
     ],
-    
+    "DEFAULT_SCHEMA_CLASS" : "drf_standardized_errors.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS" : "rest_framework.pagination.CursorPagination",
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
+    "EXCEPTION_FORMATTER_CLASS": "drf_standardized_errors.formatter.ExceptionFormatter",
     "PAGE_SIZE" : 5,
-    "DEFAULT_SCHEMA_CLASS" : "drf_spectacular.openapi.AutoSchema",
 }
+
+
+
 
 
 SPECTACULAR_SETTINGS = {
@@ -157,4 +164,14 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "연락처 및 라벨의 CRUD와 연락처에 라벨 적용하는 API를 담고 있습니다.",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+}
+
+DRF_STANDARDIZED_ERRORS = {
+    "ALLOWED_ERROR_STATUS_CODES": [
+        "400",
+        "404",
+        "405",
+        "429",
+        "500",
+        ],
 }
