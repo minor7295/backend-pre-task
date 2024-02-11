@@ -1,4 +1,7 @@
+from django.db import IntegrityError
+
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from api.models import (
     Contact,
@@ -51,6 +54,14 @@ class ContactDetailSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True,
     )
+
+    def create(self, validated_data):
+        try:
+            super().create(validated_data)
+        except IntegrityError as e:
+            raise ValidationError(
+                f"'{validated_data['phone']}'는 이미 등록된 전화번호입니다.",
+            )
 
     class Meta:
         model = Contact

@@ -110,6 +110,19 @@ LABEL_RESPONSE_EXAMPLE = {"label_id": 1, "label_name": "Lime"}
                 response_only = True,
                 status_codes = [400],
             ),
+            OpenApiExample(
+                "필수 파라미터 입력 누락 오류",
+                value = {
+                    "type" : "validation_error",
+                    "errors" : [{
+                        "code": "blank",
+                        "detail": "이 필드는 blank일 수 없습니다.",
+                        "attr": "phone"
+                    }],
+                },
+                response_only = True,
+                status_codes = [400],
+            ),
         ],
     ),
     destroy = extend_schema(description = "### 주소록 삭제 \n\n"),
