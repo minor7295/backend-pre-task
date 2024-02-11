@@ -154,6 +154,14 @@ paths:
                       detail: 이 필드는 blank일 수 없습니다.
                       attr: phone
                   summary: 필수 파라미터 입력 누락 오류
+                전화번호형식오류:
+                  value:
+                    type: validation_error
+                    errors:
+                    - code: invalid
+                      detail: 올바른 값을 입력하세요.
+                      attr: phone
+                  summary: 전화번호 형식 오류
           description: ''
         '404':
           content:
@@ -1208,6 +1216,7 @@ components:
         phone:
           type: string
           description: 전화번호
+          pattern: ^(0[1-9]{1}[0-9]{0,1})-(\d{3,4})-(\d{4})$
           maxLength: 100
         company:
           type: string
@@ -1325,6 +1334,7 @@ components:
         phone:
           type: string
           description: 전화번호
+          pattern: ^(0[1-9]{1}[0-9]{0,1})-(\d{3,4})-(\d{4})$
           maxLength: 100
         company_position:
           type: string

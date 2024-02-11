@@ -123,6 +123,19 @@ LABEL_RESPONSE_EXAMPLE = {"label_id": 1, "label_name": "Lime"}
                 response_only = True,
                 status_codes = [400],
             ),
+            OpenApiExample(
+                "전화번호 형식 오류",
+                value = {
+                    "type" : "validation_error",
+                    "errors" : [{
+                        "code": "invalid",
+                        "detail": "올바른 값을 입력하세요.",
+                        "attr": "phone"
+                    }],
+                },
+                response_only = True,
+                status_codes = [400],
+            ),
         ],
     ),
     destroy = extend_schema(description = "### 주소록 삭제 \n\n"),
