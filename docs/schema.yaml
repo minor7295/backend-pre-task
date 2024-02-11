@@ -1,0 +1,1871 @@
+openapi: 3.0.3
+info:
+  title: 주소록 API
+  version: 1.0.0
+  description: 연락처 및 라벨의 CRUD와 연락처에 라벨 적용하는 API를 담고 있습니다.
+paths:
+  /contact/:
+    get:
+      operationId: contact_list
+      description: "### 연락처 목록 (주소록) 조회 \n\ncursor 파라미터 기반으로 페이지네이션이 적용되어있습니다. \n\n\
+        응답에서 next/previous에 적힌 url로 이후/이전 페이지의데이터를 조회할 수 있습니다. \n\n또한 ordering 파라미터\
+        \ 기반으로 정렬된 응답을 받을 수 있습니다. \n\nname, email, phone 중 하나의 필드를 선택하여 전달하면 해당 필드\
+        \ 기준으로 오름차순/내림차순으로 정렬된 응답을 받을 수 있습니다. \n\n예를 들어 name을 전달하면 이름 기준 오름차순, -name을\
+        \ 전달하면 이름 기준 내림차순으로 정렬된 응답을 받을 수 있습니다."
+      parameters:
+      - name: cursor
+        required: false
+        in: query
+        description: The pagination cursor value.
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - contact
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactListErrorResponse400'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+              examples:
+                NotFound:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: not_found
+                      detail: 찾을 수 없습니다.
+                      attr: null
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse405'
+              examples:
+                MethodNotAllowed:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: method_not_allowed
+                      detail: 메소드(Method) "get"는 허용되지 않습니다.
+                      attr: null
+          description: ''
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse500'
+              examples:
+                APIException:
+                  value:
+                    type: server_error
+                    errors:
+                    - code: error
+                      detail: 서버 장애가 발생했습니다.
+                      attr: null
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContactListList'
+              examples:
+                연락처정보:
+                  value:
+                    next: http://localhost/contact/?cursor=cD01
+                    previous: null
+                    results:
+                    - contact_id: 1
+                      profile: https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png
+                      name: 강건우
+                      email: yunseo28@example.com
+                      phone: 055-386-9875
+                      company_position: (주) 장이윤 (도장공)
+                      labels:
+                      - label_id: 1
+                        label_name: Lime
+                  summary: 연락처 정보
+          description: ''
+    post:
+      operationId: contact_create
+      description: "### 주소록 등록 \n\n"
+      tags:
+      - contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactDetail'
+            examples:
+              연락처등록요청:
+                value:
+                  profile: https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png
+                  name: 강건우
+                  email: yunseo28@example.com
+                  phone: 055-386-9875
+                  company: (주) 장이윤
+                  position: 도장공
+                  memo: Voluptatem eveniet
+                  address: 경기도 증평군 봉은사536가
+                  birthday: '2001-10-03'
+                  website: https://www.imgim.net/
+                summary: 연락처 등록 요청
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactCreateErrorResponse400'
+              examples:
+                중복전화번호등록오류:
+                  value:
+                    type: validation_error
+                    errors:
+                    - code: invalid
+                      detail: '''055-386-9875''는 이미 등록된 전화번호입니다.'
+                      attr: null
+                  summary: 중복 전화번호 등록 오류
+                필수파라미터입력누락오류:
+                  value:
+                    type: validation_error
+                    errors:
+                    - code: blank
+                      detail: 이 필드는 blank일 수 없습니다.
+                      attr: phone
+                  summary: 필수 파라미터 입력 누락 오류
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+              examples:
+                NotFound:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: not_found
+                      detail: 찾을 수 없습니다.
+                      attr: null
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse405'
+              examples:
+                MethodNotAllowed:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: method_not_allowed
+                      detail: 메소드(Method) "get"는 허용되지 않습니다.
+                      attr: null
+          description: ''
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse500'
+              examples:
+                APIException:
+                  value:
+                    type: server_error
+                    errors:
+                    - code: error
+                      detail: 서버 장애가 발생했습니다.
+                      attr: null
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactDetail'
+              examples:
+                연락처상세정보:
+                  value:
+                    contact_id: 1
+                    profile: https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png
+                    name: 강건우
+                    email: yunseo28@example.com
+                    phone: 055-386-9875
+                    company: (주) 장이윤
+                    position: 도장공
+                    memo: Voluptatem eveniet
+                    address: 경기도 증평군 봉은사536가
+                    birthday: '2001-10-03'
+                    website: https://www.imgim.net/
+                    labels:
+                    - label_id: 1
+                      label_name: Lime
+                  summary: 연락처 상세 정보
+          description: ''
+  /contact/{contact_id}/:
+    get:
+      operationId: contact_retrieve
+      description: "### 주소록 조회 \n\n"
+      parameters:
+      - in: path
+        name: contact_id
+        schema:
+          type: integer
+          description: 연락처 id
+        required: true
+      tags:
+      - contact
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactRetrieveErrorResponse400'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+              examples:
+                NotFound:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: not_found
+                      detail: 찾을 수 없습니다.
+                      attr: null
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse405'
+              examples:
+                MethodNotAllowed:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: method_not_allowed
+                      detail: 메소드(Method) "get"는 허용되지 않습니다.
+                      attr: null
+          description: ''
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse500'
+              examples:
+                APIException:
+                  value:
+                    type: server_error
+                    errors:
+                    - code: error
+                      detail: 서버 장애가 발생했습니다.
+                      attr: null
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactDetail'
+              examples:
+                연락처상세정보:
+                  value:
+                    contact_id: 1
+                    profile: https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png
+                    name: 강건우
+                    email: yunseo28@example.com
+                    phone: 055-386-9875
+                    company: (주) 장이윤
+                    position: 도장공
+                    memo: Voluptatem eveniet
+                    address: 경기도 증평군 봉은사536가
+                    birthday: '2001-10-03'
+                    website: https://www.imgim.net/
+                    labels:
+                    - label_id: 1
+                      label_name: Lime
+                  summary: 연락처 상세 정보
+          description: ''
+    put:
+      operationId: contact_update
+      description: "### 주소록 수정 \n\n"
+      parameters:
+      - in: path
+        name: contact_id
+        schema:
+          type: integer
+          description: 연락처 id
+        required: true
+      tags:
+      - contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactDetail'
+            examples:
+              연락처수정요청:
+                value:
+                  profile: https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png
+                  name: 강건우
+                  email: yunseo28@example.com
+                  phone: 055-386-9875
+                  company: (주) 장이윤
+                  position: 도장공
+                  memo: Voluptatem eveniet
+                  address: 경기도 증평군 봉은사536가
+                  birthday: '2001-10-03'
+                  website: https://www.imgim.net/
+                summary: 연락처 수정 요청
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactUpdateErrorResponse400'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+              examples:
+                NotFound:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: not_found
+                      detail: 찾을 수 없습니다.
+                      attr: null
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse405'
+              examples:
+                MethodNotAllowed:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: method_not_allowed
+                      detail: 메소드(Method) "get"는 허용되지 않습니다.
+                      attr: null
+          description: ''
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse500'
+              examples:
+                APIException:
+                  value:
+                    type: server_error
+                    errors:
+                    - code: error
+                      detail: 서버 장애가 발생했습니다.
+                      attr: null
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactDetail'
+              examples:
+                연락처상세정보:
+                  value:
+                    contact_id: 1
+                    profile: https://www.gstatic.com/identity/boq/profilepicturepicker/photo_silhouette_e02a5f5deb3ffc173119a01bc9575490.png
+                    name: 강건우
+                    email: yunseo28@example.com
+                    phone: 055-386-9875
+                    company: (주) 장이윤
+                    position: 도장공
+                    memo: Voluptatem eveniet
+                    address: 경기도 증평군 봉은사536가
+                    birthday: '2001-10-03'
+                    website: https://www.imgim.net/
+                    labels:
+                    - label_id: 1
+                      label_name: Lime
+                  summary: 연락처 상세 정보
+          description: ''
+    delete:
+      operationId: contact_destroy
+      description: "### 주소록 삭제 \n\n"
+      parameters:
+      - in: path
+        name: contact_id
+        schema:
+          type: integer
+          description: 연락처 id
+        required: true
+      tags:
+      - contact
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactDestroyErrorResponse400'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+              examples:
+                NotFound:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: not_found
+                      detail: 찾을 수 없습니다.
+                      attr: null
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse405'
+              examples:
+                MethodNotAllowed:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: method_not_allowed
+                      detail: 메소드(Method) "get"는 허용되지 않습니다.
+                      attr: null
+          description: ''
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse500'
+              examples:
+                APIException:
+                  value:
+                    type: server_error
+                    errors:
+                    - code: error
+                      detail: 서버 장애가 발생했습니다.
+                      attr: null
+          description: ''
+        '204':
+          description: No response body
+  /contact/{contact_id}/label/:
+    put:
+      operationId: contact_label_update
+      description: "### 라벨 적용 \n\ncontact_id로 특정한 연락처에 라벨을 적용합니다.\n\n기존에 등록되었던 라벨은\
+        \ 모두 삭제되고, 요청으로 명시한 라벨의 정보만 남게 됩니다. \n\n"
+      parameters:
+      - in: path
+        name: contact_id
+        schema:
+          type: integer
+          description: 연락처 id
+        required: true
+      tags:
+      - contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabelList'
+            examples:
+              라벨등록요청:
+                value:
+                - label_id: 1
+                  label_name: Lime
+                summary: 라벨 등록 요청
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactLabelUpdateErrorResponse400'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+              examples:
+                NotFound:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: not_found
+                      detail: 찾을 수 없습니다.
+                      attr: null
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse405'
+              examples:
+                MethodNotAllowed:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: method_not_allowed
+                      detail: 메소드(Method) "get"는 허용되지 않습니다.
+                      attr: null
+          description: ''
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse500'
+              examples:
+                APIException:
+                  value:
+                    type: server_error
+                    errors:
+                    - code: error
+                      detail: 서버 장애가 발생했습니다.
+                      attr: null
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelList'
+              examples:
+                라벨등록응답:
+                  value:
+                  - label_id: 1
+                    label_name: Lime
+                  summary: 라벨 등록 응답
+          description: ''
+  /label/:
+    get:
+      operationId: label_list
+      description: "### 라벨 목록 조회 \n\n"
+      tags:
+      - label
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelListErrorResponse400'
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse405'
+              examples:
+                MethodNotAllowed:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: method_not_allowed
+                      detail: 메소드(Method) "get"는 허용되지 않습니다.
+                      attr: null
+          description: ''
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse500'
+              examples:
+                APIException:
+                  value:
+                    type: server_error
+                    errors:
+                    - code: error
+                      detail: 서버 장애가 발생했습니다.
+                      attr: null
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LabelList'
+              examples:
+                라벨목록:
+                  value:
+                  - - label_id: 1
+                      label_name: Lime
+                  summary: 라벨 목록
+          description: ''
+    post:
+      operationId: label_create
+      description: "### 라벨 등록 \n\n"
+      tags:
+      - label
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabelCreate'
+            examples:
+              라벨등록요청:
+                value:
+                  label_name: Lime
+                summary: 라벨 등록 요청
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelCreateErrorResponse400'
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse405'
+              examples:
+                MethodNotAllowed:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: method_not_allowed
+                      detail: 메소드(Method) "get"는 허용되지 않습니다.
+                      attr: null
+          description: ''
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse500'
+              examples:
+                APIException:
+                  value:
+                    type: server_error
+                    errors:
+                    - code: error
+                      detail: 서버 장애가 발생했습니다.
+                      attr: null
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelCreate'
+              examples:
+                라벨등록응답:
+                  value:
+                  - label_id: 1
+                    label_name: Lime
+                  summary: 라벨 등록 응답
+          description: ''
+  /label/{label_id}/:
+    put:
+      operationId: label_update
+      description: "### 라벨 이름 수정 \n\n"
+      parameters:
+      - in: path
+        name: label_id
+        schema:
+          type: integer
+          description: 라벨 id
+        required: true
+      tags:
+      - label
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabelUpdate'
+            examples:
+              라벨수정요청:
+                value:
+                  label_name: Lime
+                summary: 라벨 수정 요청
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelUpdateErrorResponse400'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+              examples:
+                NotFound:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: not_found
+                      detail: 찾을 수 없습니다.
+                      attr: null
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse405'
+              examples:
+                MethodNotAllowed:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: method_not_allowed
+                      detail: 메소드(Method) "get"는 허용되지 않습니다.
+                      attr: null
+          description: ''
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse500'
+              examples:
+                APIException:
+                  value:
+                    type: server_error
+                    errors:
+                    - code: error
+                      detail: 서버 장애가 발생했습니다.
+                      attr: null
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelUpdate'
+              examples:
+                라벨수정응답:
+                  value:
+                    label_id: 1
+                    label_name: Lime
+                  summary: 라벨 수정 응답
+          description: ''
+    delete:
+      operationId: label_destroy
+      description: "### 라벨 삭제 \n\n"
+      parameters:
+      - in: path
+        name: label_id
+        schema:
+          type: integer
+          description: 라벨 id
+        required: true
+      tags:
+      - label
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelDestroyErrorResponse400'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+              examples:
+                NotFound:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: not_found
+                      detail: 찾을 수 없습니다.
+                      attr: null
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse405'
+              examples:
+                MethodNotAllowed:
+                  value:
+                    type: client_error
+                    errors:
+                    - code: method_not_allowed
+                      detail: 메소드(Method) "get"는 허용되지 않습니다.
+                      attr: null
+          description: ''
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse500'
+              examples:
+                APIException:
+                  value:
+                    type: server_error
+                    errors:
+                    - code: error
+                      detail: 서버 장애가 발생했습니다.
+                      attr: null
+          description: ''
+        '204':
+          description: No response body
+components:
+  schemas:
+    Attr307Enum:
+      enum:
+      - email
+      type: string
+      description: '* `email` - email'
+    Attr3f2Enum:
+      enum:
+      - memo
+      type: string
+      description: '* `memo` - memo'
+    Attr50fEnum:
+      enum:
+      - position
+      type: string
+      description: '* `position` - position'
+    Attr5ebEnum:
+      enum:
+      - name
+      type: string
+      description: '* `name` - name'
+    Attr780Enum:
+      enum:
+      - website
+      type: string
+      description: '* `website` - website'
+    AttrB8dEnum:
+      enum:
+      - phone
+      type: string
+      description: '* `phone` - phone'
+    AttrD61Enum:
+      enum:
+      - company
+      type: string
+      description: '* `company` - company'
+    AttrD81Enum:
+      enum:
+      - non_field_errors
+      type: string
+      description: '* `non_field_errors` - non_field_errors'
+    AttrDa0Enum:
+      enum:
+      - profile
+      type: string
+      description: '* `profile` - profile'
+    AttrDe0Enum:
+      enum:
+      - birthday
+      type: string
+      description: '* `birthday` - birthday'
+    AttrF45Enum:
+      enum:
+      - address
+      type: string
+      description: '* `address` - address'
+    AttrFeaEnum:
+      enum:
+      - label_name
+      type: string
+      description: '* `label_name` - label_name'
+    Code238Enum:
+      enum:
+      - blank
+      - invalid
+      - max_length
+      - 'null'
+      - null_characters_not_allowed
+      - required
+      - surrogate_characters_not_allowed
+      type: string
+      description: |-
+        * `blank` - blank
+        * `invalid` - invalid
+        * `max_length` - max_length
+        * `null` - null
+        * `null_characters_not_allowed` - null_characters_not_allowed
+        * `required` - required
+        * `surrogate_characters_not_allowed` - surrogate_characters_not_allowed
+    Code23dEnum:
+      enum:
+      - blank
+      - invalid
+      - null_characters_not_allowed
+      - surrogate_characters_not_allowed
+      type: string
+      description: |-
+        * `blank` - blank
+        * `invalid` - invalid
+        * `null_characters_not_allowed` - null_characters_not_allowed
+        * `surrogate_characters_not_allowed` - surrogate_characters_not_allowed
+    Code84fEnum:
+      enum:
+      - blank
+      - invalid
+      - max_length
+      - null_characters_not_allowed
+      - surrogate_characters_not_allowed
+      type: string
+      description: |-
+        * `blank` - blank
+        * `invalid` - invalid
+        * `max_length` - max_length
+        * `null_characters_not_allowed` - null_characters_not_allowed
+        * `surrogate_characters_not_allowed` - surrogate_characters_not_allowed
+    CodeCeaEnum:
+      enum:
+      - datetime
+      - invalid
+      type: string
+      description: |-
+        * `datetime` - datetime
+        * `invalid` - invalid
+    CodeE7cEnum:
+      enum:
+      - invalid
+      type: string
+      description: '* `invalid` - invalid'
+    ContactCreateAddressErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrF45Enum'
+        code:
+          $ref: '#/components/schemas/Code23dEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactCreateBirthdayErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrDe0Enum'
+        code:
+          $ref: '#/components/schemas/CodeCeaEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactCreateCompanyErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrD61Enum'
+        code:
+          $ref: '#/components/schemas/Code84fEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactCreateEmailErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/Attr307Enum'
+        code:
+          $ref: '#/components/schemas/Code84fEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactCreateError:
+      oneOf:
+      - $ref: '#/components/schemas/ContactCreateNonFieldErrorsErrorComponent'
+      - $ref: '#/components/schemas/ContactCreateProfileErrorComponent'
+      - $ref: '#/components/schemas/ContactCreateNameErrorComponent'
+      - $ref: '#/components/schemas/ContactCreateEmailErrorComponent'
+      - $ref: '#/components/schemas/ContactCreatePhoneErrorComponent'
+      - $ref: '#/components/schemas/ContactCreateCompanyErrorComponent'
+      - $ref: '#/components/schemas/ContactCreatePositionErrorComponent'
+      - $ref: '#/components/schemas/ContactCreateMemoErrorComponent'
+      - $ref: '#/components/schemas/ContactCreateAddressErrorComponent'
+      - $ref: '#/components/schemas/ContactCreateBirthdayErrorComponent'
+      - $ref: '#/components/schemas/ContactCreateWebsiteErrorComponent'
+      discriminator:
+        propertyName: attr
+        mapping:
+          non_field_errors: '#/components/schemas/ContactCreateNonFieldErrorsErrorComponent'
+          profile: '#/components/schemas/ContactCreateProfileErrorComponent'
+          name: '#/components/schemas/ContactCreateNameErrorComponent'
+          email: '#/components/schemas/ContactCreateEmailErrorComponent'
+          phone: '#/components/schemas/ContactCreatePhoneErrorComponent'
+          company: '#/components/schemas/ContactCreateCompanyErrorComponent'
+          position: '#/components/schemas/ContactCreatePositionErrorComponent'
+          memo: '#/components/schemas/ContactCreateMemoErrorComponent'
+          address: '#/components/schemas/ContactCreateAddressErrorComponent'
+          birthday: '#/components/schemas/ContactCreateBirthdayErrorComponent'
+          website: '#/components/schemas/ContactCreateWebsiteErrorComponent'
+    ContactCreateErrorResponse400:
+      oneOf:
+      - $ref: '#/components/schemas/ContactCreateValidationError'
+      - $ref: '#/components/schemas/ParseErrorResponse'
+      discriminator:
+        propertyName: type
+        mapping:
+          validation_error: '#/components/schemas/ContactCreateValidationError'
+          client_error: '#/components/schemas/ParseErrorResponse'
+    ContactCreateMemoErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/Attr3f2Enum'
+        code:
+          $ref: '#/components/schemas/Code23dEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactCreateNameErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/Attr5ebEnum'
+        code:
+          $ref: '#/components/schemas/Code238Enum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactCreateNonFieldErrorsErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrD81Enum'
+        code:
+          $ref: '#/components/schemas/CodeE7cEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactCreatePhoneErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrB8dEnum'
+        code:
+          $ref: '#/components/schemas/Code238Enum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactCreatePositionErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/Attr50fEnum'
+        code:
+          $ref: '#/components/schemas/Code84fEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactCreateProfileErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrDa0Enum'
+        code:
+          $ref: '#/components/schemas/Code84fEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactCreateValidationError:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TypeA2cEnum'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactCreateError'
+      required:
+      - errors
+      - type
+    ContactCreateWebsiteErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/Attr780Enum'
+        code:
+          $ref: '#/components/schemas/Code84fEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactDestroyErrorResponse400:
+      oneOf:
+      - $ref: '#/components/schemas/ParseErrorResponse'
+      discriminator:
+        propertyName: type
+        mapping:
+          client_error: '#/components/schemas/ParseErrorResponse'
+    ContactDetail:
+      type: object
+      properties:
+        contact_id:
+          type: integer
+          readOnly: true
+          description: 연락처 id
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabelList'
+          readOnly: true
+        profile:
+          type: string
+          format: uri
+          nullable: true
+          description: 프로필 사진 url
+          maxLength: 2083
+        name:
+          type: string
+          description: 이름
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          description: 이메일
+          maxLength: 254
+        phone:
+          type: string
+          description: 전화번호
+          maxLength: 100
+        company:
+          type: string
+          nullable: true
+          description: 회사
+          maxLength: 100
+        position:
+          type: string
+          nullable: true
+          description: 직책
+          maxLength: 100
+        memo:
+          type: string
+          nullable: true
+          description: 메모
+        address:
+          type: string
+          nullable: true
+          description: 주소
+        birthday:
+          type: string
+          format: date
+          nullable: true
+          description: 생일
+        website:
+          type: string
+          format: uri
+          nullable: true
+          description: 웹사이트
+          maxLength: 2083
+      required:
+      - contact_id
+      - labels
+      - name
+      - phone
+    ContactLabelUpdateError:
+      oneOf:
+      - $ref: '#/components/schemas/ContactLabelUpdateNonFieldErrorsErrorComponent'
+      - $ref: '#/components/schemas/ContactLabelUpdateLabelNameErrorComponent'
+      discriminator:
+        propertyName: attr
+        mapping:
+          non_field_errors: '#/components/schemas/ContactLabelUpdateNonFieldErrorsErrorComponent'
+          label_name: '#/components/schemas/ContactLabelUpdateLabelNameErrorComponent'
+    ContactLabelUpdateErrorResponse400:
+      oneOf:
+      - $ref: '#/components/schemas/ContactLabelUpdateValidationError'
+      - $ref: '#/components/schemas/ParseErrorResponse'
+      discriminator:
+        propertyName: type
+        mapping:
+          validation_error: '#/components/schemas/ContactLabelUpdateValidationError'
+          client_error: '#/components/schemas/ParseErrorResponse'
+    ContactLabelUpdateLabelNameErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrFeaEnum'
+        code:
+          $ref: '#/components/schemas/Code238Enum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactLabelUpdateNonFieldErrorsErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrD81Enum'
+        code:
+          $ref: '#/components/schemas/CodeE7cEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactLabelUpdateValidationError:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TypeA2cEnum'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactLabelUpdateError'
+      required:
+      - errors
+      - type
+    ContactList:
+      type: object
+      properties:
+        contact_id:
+          type: integer
+          readOnly: true
+          description: 연락처 id
+        profile:
+          type: string
+          format: uri
+          nullable: true
+          description: 프로필 사진 url
+          maxLength: 2083
+        name:
+          type: string
+          description: 이름
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          description: 이메일
+          maxLength: 254
+        phone:
+          type: string
+          description: 전화번호
+          maxLength: 100
+        company_position:
+          type: string
+          readOnly: true
+          description: 회사 (직책)
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabelList'
+          readOnly: true
+      required:
+      - company_position
+      - contact_id
+      - labels
+      - name
+      - phone
+    ContactListErrorResponse400:
+      oneOf:
+      - $ref: '#/components/schemas/ParseErrorResponse'
+      discriminator:
+        propertyName: type
+        mapping:
+          client_error: '#/components/schemas/ParseErrorResponse'
+    ContactRetrieveErrorResponse400:
+      oneOf:
+      - $ref: '#/components/schemas/ParseErrorResponse'
+      discriminator:
+        propertyName: type
+        mapping:
+          client_error: '#/components/schemas/ParseErrorResponse'
+    ContactUpdateAddressErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrF45Enum'
+        code:
+          $ref: '#/components/schemas/Code23dEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactUpdateBirthdayErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrDe0Enum'
+        code:
+          $ref: '#/components/schemas/CodeCeaEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactUpdateCompanyErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrD61Enum'
+        code:
+          $ref: '#/components/schemas/Code84fEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactUpdateEmailErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/Attr307Enum'
+        code:
+          $ref: '#/components/schemas/Code84fEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactUpdateError:
+      oneOf:
+      - $ref: '#/components/schemas/ContactUpdateNonFieldErrorsErrorComponent'
+      - $ref: '#/components/schemas/ContactUpdateProfileErrorComponent'
+      - $ref: '#/components/schemas/ContactUpdateNameErrorComponent'
+      - $ref: '#/components/schemas/ContactUpdateEmailErrorComponent'
+      - $ref: '#/components/schemas/ContactUpdatePhoneErrorComponent'
+      - $ref: '#/components/schemas/ContactUpdateCompanyErrorComponent'
+      - $ref: '#/components/schemas/ContactUpdatePositionErrorComponent'
+      - $ref: '#/components/schemas/ContactUpdateMemoErrorComponent'
+      - $ref: '#/components/schemas/ContactUpdateAddressErrorComponent'
+      - $ref: '#/components/schemas/ContactUpdateBirthdayErrorComponent'
+      - $ref: '#/components/schemas/ContactUpdateWebsiteErrorComponent'
+      discriminator:
+        propertyName: attr
+        mapping:
+          non_field_errors: '#/components/schemas/ContactUpdateNonFieldErrorsErrorComponent'
+          profile: '#/components/schemas/ContactUpdateProfileErrorComponent'
+          name: '#/components/schemas/ContactUpdateNameErrorComponent'
+          email: '#/components/schemas/ContactUpdateEmailErrorComponent'
+          phone: '#/components/schemas/ContactUpdatePhoneErrorComponent'
+          company: '#/components/schemas/ContactUpdateCompanyErrorComponent'
+          position: '#/components/schemas/ContactUpdatePositionErrorComponent'
+          memo: '#/components/schemas/ContactUpdateMemoErrorComponent'
+          address: '#/components/schemas/ContactUpdateAddressErrorComponent'
+          birthday: '#/components/schemas/ContactUpdateBirthdayErrorComponent'
+          website: '#/components/schemas/ContactUpdateWebsiteErrorComponent'
+    ContactUpdateErrorResponse400:
+      oneOf:
+      - $ref: '#/components/schemas/ContactUpdateValidationError'
+      - $ref: '#/components/schemas/ParseErrorResponse'
+      discriminator:
+        propertyName: type
+        mapping:
+          validation_error: '#/components/schemas/ContactUpdateValidationError'
+          client_error: '#/components/schemas/ParseErrorResponse'
+    ContactUpdateMemoErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/Attr3f2Enum'
+        code:
+          $ref: '#/components/schemas/Code23dEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactUpdateNameErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/Attr5ebEnum'
+        code:
+          $ref: '#/components/schemas/Code238Enum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactUpdateNonFieldErrorsErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrD81Enum'
+        code:
+          $ref: '#/components/schemas/CodeE7cEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactUpdatePhoneErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrB8dEnum'
+        code:
+          $ref: '#/components/schemas/Code238Enum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactUpdatePositionErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/Attr50fEnum'
+        code:
+          $ref: '#/components/schemas/Code84fEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactUpdateProfileErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrDa0Enum'
+        code:
+          $ref: '#/components/schemas/Code84fEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    ContactUpdateValidationError:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TypeA2cEnum'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactUpdateError'
+      required:
+      - errors
+      - type
+    ContactUpdateWebsiteErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/Attr780Enum'
+        code:
+          $ref: '#/components/schemas/Code84fEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    Error404:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/Error404CodeEnum'
+        detail:
+          type: string
+        attr:
+          type: string
+          nullable: true
+      required:
+      - attr
+      - code
+      - detail
+    Error404CodeEnum:
+      enum:
+      - not_found
+      type: string
+      description: '* `not_found` - Not Found'
+    Error405:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/Error405CodeEnum'
+        detail:
+          type: string
+        attr:
+          type: string
+          nullable: true
+      required:
+      - attr
+      - code
+      - detail
+    Error405CodeEnum:
+      enum:
+      - method_not_allowed
+      type: string
+      description: '* `method_not_allowed` - Method Not Allowed'
+    Error500:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/Error500CodeEnum'
+        detail:
+          type: string
+        attr:
+          type: string
+          nullable: true
+      required:
+      - attr
+      - code
+      - detail
+    Error500CodeEnum:
+      enum:
+      - error
+      type: string
+      description: '* `error` - Error'
+    ErrorResponse404:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/Type5d3Enum'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error404'
+      required:
+      - errors
+      - type
+    ErrorResponse405:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/Type5d3Enum'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error405'
+      required:
+      - errors
+      - type
+    ErrorResponse500:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorResponse500TypeEnum'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error500'
+      required:
+      - errors
+      - type
+    ErrorResponse500TypeEnum:
+      enum:
+      - server_error
+      type: string
+      description: '* `server_error` - Server Error'
+    LabelCreate:
+      type: object
+      properties:
+        label_name:
+          type: string
+          description: 라벨 이름
+          maxLength: 100
+      required:
+      - label_name
+    LabelCreateError:
+      oneOf:
+      - $ref: '#/components/schemas/LabelCreateNonFieldErrorsErrorComponent'
+      - $ref: '#/components/schemas/LabelCreateLabelNameErrorComponent'
+      discriminator:
+        propertyName: attr
+        mapping:
+          non_field_errors: '#/components/schemas/LabelCreateNonFieldErrorsErrorComponent'
+          label_name: '#/components/schemas/LabelCreateLabelNameErrorComponent'
+    LabelCreateErrorResponse400:
+      oneOf:
+      - $ref: '#/components/schemas/LabelCreateValidationError'
+      - $ref: '#/components/schemas/ParseErrorResponse'
+      discriminator:
+        propertyName: type
+        mapping:
+          validation_error: '#/components/schemas/LabelCreateValidationError'
+          client_error: '#/components/schemas/ParseErrorResponse'
+    LabelCreateLabelNameErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrFeaEnum'
+        code:
+          $ref: '#/components/schemas/Code238Enum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    LabelCreateNonFieldErrorsErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrD81Enum'
+        code:
+          $ref: '#/components/schemas/CodeE7cEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    LabelCreateValidationError:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TypeA2cEnum'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabelCreateError'
+      required:
+      - errors
+      - type
+    LabelDestroyErrorResponse400:
+      oneOf:
+      - $ref: '#/components/schemas/ParseErrorResponse'
+      discriminator:
+        propertyName: type
+        mapping:
+          client_error: '#/components/schemas/ParseErrorResponse'
+    LabelList:
+      type: object
+      properties:
+        label_id:
+          type: integer
+          readOnly: true
+          description: 라벨 id
+        label_name:
+          type: string
+          description: 라벨 이름
+          maxLength: 100
+      required:
+      - label_id
+      - label_name
+    LabelListErrorResponse400:
+      oneOf:
+      - $ref: '#/components/schemas/ParseErrorResponse'
+      discriminator:
+        propertyName: type
+        mapping:
+          client_error: '#/components/schemas/ParseErrorResponse'
+    LabelUpdate:
+      type: object
+      properties:
+        label_id:
+          type: integer
+          readOnly: true
+          description: 라벨 id
+        label_name:
+          type: string
+          description: 라벨 이름
+          maxLength: 100
+      required:
+      - label_id
+      - label_name
+    LabelUpdateError:
+      oneOf:
+      - $ref: '#/components/schemas/LabelUpdateNonFieldErrorsErrorComponent'
+      - $ref: '#/components/schemas/LabelUpdateLabelNameErrorComponent'
+      discriminator:
+        propertyName: attr
+        mapping:
+          non_field_errors: '#/components/schemas/LabelUpdateNonFieldErrorsErrorComponent'
+          label_name: '#/components/schemas/LabelUpdateLabelNameErrorComponent'
+    LabelUpdateErrorResponse400:
+      oneOf:
+      - $ref: '#/components/schemas/LabelUpdateValidationError'
+      - $ref: '#/components/schemas/ParseErrorResponse'
+      discriminator:
+        propertyName: type
+        mapping:
+          validation_error: '#/components/schemas/LabelUpdateValidationError'
+          client_error: '#/components/schemas/ParseErrorResponse'
+    LabelUpdateLabelNameErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrFeaEnum'
+        code:
+          $ref: '#/components/schemas/Code238Enum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    LabelUpdateNonFieldErrorsErrorComponent:
+      type: object
+      properties:
+        attr:
+          $ref: '#/components/schemas/AttrD81Enum'
+        code:
+          $ref: '#/components/schemas/CodeE7cEnum'
+        detail:
+          type: string
+      required:
+      - attr
+      - code
+      - detail
+    LabelUpdateValidationError:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TypeA2cEnum'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabelUpdateError'
+      required:
+      - errors
+      - type
+    PaginatedContactListList:
+      type: object
+      properties:
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactList'
+    ParseError:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/ParseErrorCodeEnum'
+        detail:
+          type: string
+        attr:
+          type: string
+          nullable: true
+      required:
+      - attr
+      - code
+      - detail
+    ParseErrorCodeEnum:
+      enum:
+      - parse_error
+      type: string
+      description: '* `parse_error` - Parse Error'
+    ParseErrorResponse:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/Type5d3Enum'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParseError'
+      required:
+      - errors
+      - type
+    Type5d3Enum:
+      enum:
+      - client_error
+      type: string
+      description: '* `client_error` - Client Error'
+    TypeA2cEnum:
+      enum:
+      - validation_error
+      type: string
+      description: '* `validation_error` - Validation Error'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
