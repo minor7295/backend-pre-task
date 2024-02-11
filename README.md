@@ -66,7 +66,7 @@ http://localhost/api/schema/swagger-ui/
 3) M : N 관계 처리: `tb_contact`테이블의 `contact_id`필드, `tb_label`테이블의 `label_id`필드를 각각 `tb_contact_label`테이블의 동일명의 필드와 외래키로 연결하여 연락처와 라벨의 연결관계를 표현합니다. Django ORM model에서 `ManyToManyField`필드로 표현됩니다.
 4) url : `tb_contact`테이블의 `profile`(프로필이미지 url), `website`(웹사이트) 필드는 Django ORM model의 URLField를 사용하여 표현합니다. MySQL DB에서는 varchar 필드로 표현되며, Chrome 브라우저 기준 최대 url길이인 2083자로 설정하였습니다.
 5) email : `tb_contact`테이블의 `email`필드는 Django ORM model의 EmailField를 사용하여 표현합니다. MySQL DB에서는 varchar(254) 필드로 표현됩니다.
-
+6) phone : `tb_contact`테이블의 `phone`필드는 RegexValidator를 사용하여 전화번호 규칙에 맞는 값이 입력되었는지 검증합니다.
 
 ## 디렉토리 구조
 ```
@@ -102,6 +102,7 @@ http://localhost/api/schema/swagger-ui/
 2) Nested Serializer: 연락처별로 적용된 라벨들을 표현하기 위해 연락처 목록, 연락처 상세정보를 담당하는 `ContactListSerializer`와 `ContactDetailSerializer`에 라벨을 담당하는 `LabelListSerializer`를 필드로 추가하였습니다.
 3) 필드 추가 정의: 연락처 목록에서는 `company`(회사)와 `position`(직책)을 하나의 필드로 합쳐서 표현하기 위해 `company_position`이라는 필드를 추가하였습니다. list view에서 filter_queryset 메소드를 재정의하며 추가된 `company_position`필드를 json으로 변환하게 됩니다.
 4) 필드 제한: 연락처 목록에서는 `Meta` 클래스의 `fields` 프로퍼티에 json으로 변환할 필드목록을 명시하여 상세정보를 생략합니다.
+5) unique index 오류 처리: serializer의 create 메소드를 재정의하여 unique index로 제한한 규칙에 위배되는 레코드가 생성될 때 ValidationException이 raise되도록 합니다.
 
 ## view 구성
 1) ModelViewSet의 사용: CRUD 구현은 Django RestFramework의 ModelViewSet을 상속하여 구현합니다. 단, 개별 라벨 정보와 같이 retrieve view의 필요성이 없는 경우 api에서 제외하기 위해 ModelViewSet의 일부 Mixin을 상속하여 구현합니다.
